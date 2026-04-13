@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 公開頁面 vs Discord 頻道 | 經理人AIPM班（第一期）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', 'Noto Serif TC', serif; background: #1a1a2e; color: #e0e0e0; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 70%, rgba(228,175,80,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(80,200,200,0.05) 0%, transparent 50%);
+    animation: float 20s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-2%, 2%); }
+  }
+  .hero-tag {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.3em;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 .claude { color: #e4af50; }
+  .hero h1 .vs { color: #888; font-style: italic; font-weight: 400; font-size: 0.6em; }
+  .hero h1 .discord { color: #5ccfcf; }
+  .hero-sub {
+    font-size: clamp(0.95rem, 2vw, 1.2rem);
+    color: #aaa;
+    max-width: 700px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-badges {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .badge {
+    padding: 0.6rem 1.5rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #ccc;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-date {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #666;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-group {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #e4af50;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(228,175,80,0.3);
+    padding: 0.5rem 1.5rem;
+    border-radius: 999px;
+    background: rgba(228,175,80,0.05);
+  }
+
+  /* Sections */
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+  .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* Comparison Table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+  }
+  .compare-table th,
+  .compare-table td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .compare-table th {
+    color: #888;
+    font-weight: 400;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .compare-table th:nth-child(2) { color: #e4af50; }
+  .compare-table th:nth-child(3) { color: #5ccfcf; }
+  .compare-table td:first-child {
+    font-weight: 600;
+    color: #ccc;
+    white-space: nowrap;
+  }
+  .compare-table td:nth-child(2) { color: #ddd; }
+  .compare-table td:nth-child(3) { color: #ddd; }
+  .compare-table tr:hover { background: rgba(255,255,255,0.02); }
+
+  /* Cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .card-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+  .card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem; }
+  .card p { font-size: 0.9rem; color: #999; line-height: 1.6; }
+
+  /* Use Cases */
+  .use-case {
+    background: rgba(255,255,255,0.02);
+    border-left: 3px solid #e4af50;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .use-case.discord { border-left-color: #5ccfcf; }
+  .use-case h4 { color: #fff; margin-bottom: 0.3rem; font-size: 1rem; }
+  .use-case p { color: #999; font-size: 0.9rem; line-height: 1.6; }
+
+  /* Channel List */
+  .channel-list {
+    list-style: none;
+    margin: 1rem 0;
+  }
+  .channel-list li {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .channel-list .ch-icon {
+    font-size: 1.2rem;
+    width: 2rem;
+    text-align: center;
+  }
+  .channel-list .ch-name {
+    font-weight: 600;
+    color: #5ccfcf;
+    font-family: 'Courier New', monospace;
+  }
+  .channel-list .ch-desc {
+    color: #888;
+    font-size: 0.85rem;
+    margin-left: auto;
+  }
+
+  /* Verdict */
+  .verdict {
+    background: linear-gradient(135deg, rgba(228,175,80,0.08), rgba(92,207,207,0.08));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 2.5rem;
+    text-align: center;
+    margin: 3rem 0;
+  }
+  .verdict h2 { font-size: 1.5rem; color: #fff; margin-bottom: 1rem; }
+  .verdict p { color: #bbb; line-height: 1.8; font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    color: #555;
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .compare-table { font-size: 0.85rem; }
+    .compare-table th, .compare-table td { padding: 0.7rem 0.6rem; }
+    .section { padding: 2.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-tag">資訊分享工具比較 &middot; 2026</div>
+  <h1>
+    <span class="claude">Claude 公開頁面</span>
+    <br>
+    <span class="vs">vs</span>
+    <br>
+    <span class="discord">Discord 伺服器頻道</span>
+  </h1>
+  <p class="hero-sub">
+    LINE 群組資訊容易洗版，如何讓重要內容好讀、好找、好保存？<br>
+    兩種工具各有優勢，搭配使用效果最佳。
+  </p>
+  <div class="hero-badges">
+    <span class="badge">Claude Artifacts 公開連結</span>
+    <span class="badge">Discord 頻道分類管理</span>
+  </div>
+  <div class="hero-date">資料更新日期：2026年4月</div>
+  <div class="hero-group">經理人AIPM班（第一期）</div>
+</div>
+
+<!-- 核心差異 -->
+<div class="section">
+  <h2 class="section-title">核心差異比較</h2>
+  <p class="section-subtitle">兩者解決不同問題：一個是「精美呈現」，一個是「持續交流」</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>比較項目</th>
+        <th>Claude 公開頁面</th>
+        <th>Discord 頻道</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>本質</td>
+        <td>靜態網頁，一次發布</td>
+        <td>即時通訊頻道，持續互動</td>
+      </tr>
+      <tr>
+        <td>適合內容</td>
+        <td>整理好的文章、比較表、教學</td>
+        <td>討論、問答、檔案分享、圖片</td>
+      </tr>
+      <tr>
+        <td>手機閱讀</td>
+        <td>極佳，響應式網頁設計</td>
+        <td>良好，需安裝 Discord App</td>
+      </tr>
+      <tr>
+        <td>LINE 洗版</td>
+        <td>只需分享一個連結</td>
+        <td>只需分享邀請連結一次</td>
+      </tr>
+      <tr>
+        <td>內容搜尋</td>
+        <td>瀏覽器內搜尋</td>
+        <td>Discord 內建搜尋功能</td>
+      </tr>
+      <tr>
+        <td>圖片保存</td>
+        <td>嵌入網頁中，永久保存</td>
+        <td>上傳至頻道，永久保存</td>
+      </tr>
+      <tr>
+        <td>互動性</td>
+        <td>僅供閱讀</td>
+        <td>可留言、回覆、表情反應</td>
+      </tr>
+      <tr>
+        <td>建立門檻</td>
+        <td>用 Claude 對話即可產生</td>
+        <td>需建立伺服器（已完成！）</td>
+      </tr>
+      <tr>
+        <td>更新方式</td>
+        <td>重新生成新頁面</td>
+        <td>隨時在頻道發新訊息</td>
+      </tr>
+      <tr>
+        <td>分類管理</td>
+        <td>每個主題一個連結</td>
+        <td>頻道分類，一目了然</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 各自最佳用途 -->
+<div class="section">
+  <h2 class="section-title">什麼時候用哪個？</h2>
+  <p class="section-subtitle">根據內容性質選擇最適合的工具</p>
+
+  <div class="use-case">
+    <h4>Claude 公開頁面 &mdash; 適合「成果展示」</h4>
+    <p>精心整理的比較表、教學文件、課程筆記摘要、分析報告。一次產生，長期分享，手機閱讀體驗佳，不會在 LINE 造成洗版。</p>
+  </div>
+  <div class="use-case">
+    <h4>Claude 公開頁面 &mdash; 適合「知識沉澱」</h4>
+    <p>把課堂學到的 AI 工具用法，請 Claude 整理成漂亮的參考頁面，方便日後查閱。</p>
+  </div>
+  <div class="use-case discord">
+    <h4>Discord 頻道 &mdash; 適合「日常交流」</h4>
+    <p>隨時提問、分享發現、貼圖片、討論作業。訊息按頻道分類，不像 LINE 群全混在一起。</p>
+  </div>
+  <div class="use-case discord">
+    <h4>Discord 頻道 &mdash; 適合「資源彙整」</h4>
+    <p>好文連結、工具推薦、課堂錄影，都可以丟到對應頻道，之後搜尋找得到。</p>
+  </div>
+  <div class="use-case discord">
+    <h4>Discord 頻道 &mdash; 適合「LINE 內容備份」</h4>
+    <p>透過 Bot 將 LINE 群組的重要對話和圖片自動同步到 #line-群組紀錄 頻道，永久保存。</p>
+  </div>
+</div>
+
+<!-- Discord 頻道一覽 -->
+<div class="section">
+  <h2 class="section-title">我們的 Discord 頻道</h2>
+  <p class="section-subtitle">經理人AIPM班（第一期）伺服器已建立以下頻道</p>
+
+  <ul class="channel-list">
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">公告</span>
+      <span class="ch-desc">重要通知與公告事項</span>
+    </li>
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">資源分享</span>
+      <span class="ch-desc">好文、工具、學習資源</span>
+    </li>
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">一般討論</span>
+      <span class="ch-desc">自由交流、閒聊</span>
+    </li>
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">問題與回答</span>
+      <span class="ch-desc">課程相關問題討論</span>
+    </li>
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">line-群組紀錄</span>
+      <span class="ch-desc">LINE 群組對話與圖片備份</span>
+    </li>
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">龍蝦交流專區</span>
+      <span class="ch-desc">只限龍蝦玩耍</span>
+    </li>
+    <li>
+      <span class="ch-icon">#</span>
+      <span class="ch-name">第二組專區</span>
+      <span class="ch-desc">第二組成員專屬空間</span>
+    </li>
+  </ul>
+</div>
+
+<!-- 搭配使用建議 -->
+<div class="section">
+  <h2 class="section-title">最佳實踐：搭配使用</h2>
+  <p class="section-subtitle">不是二選一，而是各司其職</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">1</div>
+      <h3>LINE 群組</h3>
+      <p>日常聯繫、即時通知、快速溝通。大家最熟悉的管道，保持原有使用習慣。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">2</div>
+      <h3>Claude 公開頁面</h3>
+      <p>整理好的內容，產生精美網頁連結，貼到 LINE 群只佔一則訊息，手機點開就能閱讀。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">3</div>
+      <h3>Discord 伺服器</h3>
+      <p>長期資源彙整、分類討論、圖片保存。不怕洗版，隨時回來找資料。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Verdict -->
+<div class="section">
+  <div class="verdict">
+    <h2>結論</h2>
+    <p>
+      Claude 公開頁面讓「分享」變得優雅 &mdash; 一個連結就能傳遞豐富內容。<br><br>
+      Discord 頻道讓「交流」變得有序 &mdash; 討論、資源、記錄各歸其位。<br><br>
+      兩者搭配 LINE 群組使用，就是我們 AIPM 班最完整的資訊協作方案。
+    </p>
+  </div>
+</div>
+
+<div class="footer">
+  經理人AIPM班（第一期）&middot; 2026年4月 &middot; 由 Claude 協助製作
+</div>
+
+</body>
+</html>

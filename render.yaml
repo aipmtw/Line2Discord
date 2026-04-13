@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: line2discord
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: LINE_CHANNEL_SECRET
+        sync: false
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: DISCORD_INVITE_URL
+        sync: false
