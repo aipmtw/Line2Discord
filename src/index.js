@@ -161,6 +161,9 @@ async function handleEvent(event) {
   });
 }
 
+const path = require('path');
+app.use('/public', express.static(path.join(__dirname, '..', 'public')));
+
 app.get('/', (req, res) => {
   res.status(200).send('OK');
 });
